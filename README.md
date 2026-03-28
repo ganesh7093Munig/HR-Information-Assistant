@@ -54,6 +54,35 @@ HR-Policy-RAG-Assistant/
 7. Use `qwen2.5:7b` to generate an answer based only on retrieved context
 8. Display the response along with source references
 
+## Architecture & Strategy Deep Dive
+
+The pipeline flow follows standard RAG architecture: **Documents → Chunking → Embeddings → Vector Store → Query → Retrieval → LLM → Response**.
+Below is a detailed breakdown of each step and the specific implementation strategies used in the codebase:
+
+### 1. Documents (Ingestion)
+- **Strategy:** HR policy PDFs are parsed using PyMuPDF (`fitz`). Text is extracted page-by-page while normalizing whitespace but preserving paragraph breaks. Most crucially, metadata (source filename and page number) is attached immediately to each extracted page record via a `PageRecord` dataclass (`ingestion.py`). This ensures accurate provenance for citations later.
+
+### 2. Chunking
+- **Strategy:** Extracted text is split using LangChain's `RecursiveCharacterTextSplitter`. The primary strategy here is to split on natural boundaries (double newlines, single newlines, then periods) to keep distinct semantic ideas together instead of cutting off mid-sentence. We also generate a stable SHA1 hash for each chunk ID based on its content and metadata (`config.py`). This stable deterministic chunk identifier prevents vector duplication and allows idempotent document updates.
+
+### 3. Embeddings
+- **Strategy:** Text chunks are transformed into dense vector representations using the `nomic-embed-text` model via local Ollama. The strategy to use `nomic` heavily relies on its optimizations for high-quality semantic search in a local environment. Ensuring all data is embedded locally guarantees that sensitive internal HR documents never leave the local machine architecture (`embeddings.py`).
+
+### 4. Vector Store
+- **Strategy:** Embedded chunks are stored locally using **ChromaDB**. It is chosen for its lightweight, file-based persistence (managed in the local `chroma_db/` directory). The strategy is to utilize Chroma for highly efficient nearest-neighbor similarity searches without needing complex infrastructure like a standalone or cloud vector database container (`rag_pipeline.py`).
+
+### 5. Query
+- **Strategy:** The query is captured via the Streamlit chat interface. The application processes user inputs sequentially while maintaining Streamlit `session_state` for chat history tracking (`app.py`).
+
+### 6. Retrieval
+- **Strategy:** The incoming user question is converted into an embedding using the exact same local `nomic-embed-text` model. Chroma performs a similarity search to fetch the top `K` most contextually relevant chunks. The strategy to retrieve and inject only highly pertinent snippets prevents the LLM's context window from being overloaded with irrelevant noise.
+
+### 7. LLM (Generation)
+- **Strategy:** An orchestration workflow is built using **LangGraph**, constructing a state graph passing the context and query between sequential nodes (`rag_pipeline.py`). A highly restricted prompt is passed to the local `qwen2.5:7b` model with the temperature explicitly set to `0`. The strategy forces the model to act extremely deterministically and stay purely factual, relying *only* on the retrieved chunks instead of its pretrained weights, drastically reducing the chance of hallucinating policies.
+
+### 8. Response
+- **Strategy:** The LLM output is aggregated and presented in the UI alongside distinct source citations extracted from the chunk metadata (e.g., "filename.pdf - page X"). If the context does not contain the answer, the LLM falls back to a deterministic, configured failure message defined in (`config.py`). The strategy ensures employees are met with transparent "I don't know" answers instead of fabricated or legally incorrect HR guidelines.
+
 ## Setup Instructions
 
 ### 1. Clone the repository
