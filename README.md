@@ -2,32 +2,7 @@
 
 HR Policy RAG Assistant is a local AI-powered document Q&A application built with **Python, Streamlit, LangChain, LangGraph, Ollama, and ChromaDB**. It allows users to upload HR policy PDF documents, build a local searchable knowledge base, and ask natural-language questions to get grounded answers with source references.
 
-## Features
-
-- Upload one or more HR policy PDF files
-- Extract PDF content locally
-- Split documents into chunks for retrieval
-- Generate embeddings using **Ollama** with `nomic-embed-text`
-- Store embeddings in **ChromaDB**
-- Ask HR-related questions in a chat-style interface
-- Generate answers using **Qwen2.5:7b** via Ollama
-- Show source references with file name and page number
-- Return a fallback response when the answer is not found in the uploaded documents
-- Fully local setup with no external API dependency
-
-## Tech Stack
-
-- **Python**
-- **Streamlit**
-- **LangChain**
-- **LangGraph**
-- **Ollama**
-- **Qwen2.5:7b**
-- **nomic-embed-text**
-- **ChromaDB**
-- **PyMuPDF**
-
-```bash
+```
 HR-Policy-RAG-Assistant/
 │
 ├── app.py
@@ -42,6 +17,20 @@ HR-Policy-RAG-Assistant/
 │   └── hr_policy_2.pdf
 └── chroma_db/
 ```
+
+## Tech Stack
+
+- **Python**
+- **Streamlit**
+- **LangChain**
+- **LangGraph**
+- **Ollama**
+- **Qwen2.5:7b**
+- **nomic-embed-text**
+- **ChromaDB**
+- **PyMuPDF**
+
+
 
 ## How It Works
 
