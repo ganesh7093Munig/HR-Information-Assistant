@@ -88,7 +88,7 @@ Below is a detailed breakdown of each step and the specific implementation strat
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Zeusturbo/HR-Policy-RAG-Assistant.git
+git clone https://ganesh7093Munig/HR-Policy-RAG-Assistant.git
 cd HR-Policy-RAG-Assistant
 ```
 
