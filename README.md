@@ -90,7 +90,7 @@ Below is a detailed breakdown of each step and the specific implementation strat
 
 ### 2. Chunking
 - **Strategy:** Extracted text is split using LangChain's `RecursiveCharacterTextSplitter`. The primary strategy here is to split on natural boundaries (double newlines, single newlines, then periods) to keep distinct semantic ideas together instead of cutting off mid-sentence. We also generate a stable SHA1 hash for each chunk ID based on its content and metadata (`config.py`). This stable deterministic chunk identifier prevents vector duplication and allows idempotent document updates.I took 
-     - **chunk size=900**
+     - **chunk size=750**
      - **chunk overlap=150**
 ### 3. Embeddings
 - **Strategy:** Text chunks are transformed into dense vector representations using the `nomic-embed-text` model via local Ollama. The strategy to use `nomic` heavily relies on its optimizations for high-quality semantic search in a local environment. Ensuring all data is embedded locally guarantees that sensitive internal HR documents never leave the local machine architecture (`embeddings.py`).
