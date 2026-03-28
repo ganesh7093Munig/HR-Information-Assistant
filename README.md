@@ -97,16 +97,10 @@ cd HR-Policy-RAG-Assistant
 #### Windows
 
 ```bash
-python -m venv rag_env
-rag_env\Scripts\activate
+python -m venv venv
+venv\Scripts\activate
 ```
 
-#### macOS / Linux
-
-```bash
-python3 -m venv rag_env
-source rag_env/bin/activate
-```
 
 ### 3. Install dependencies
 
